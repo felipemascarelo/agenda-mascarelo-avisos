@@ -1,0 +1,31 @@
+AVISOS DOS LEMBRETES COM O APP FECHADO - Agenda Mascarelo
+==========================================================
+O GitHub roda este programa a cada 5 minutos. Ele olha seus lembretes no Firebase e, na hora do aviso, manda a notificação para o seu celular.
+O aviso pode chegar de 5 a 15 minutos depois do horário, porque o GitHub atrasa um pouco as tarefas agendadas.
+Este repositório NÃO guarda seus dados, só o código. Por isso ele pode ser PÚBLICO (assim o agendamento é gratuito e sem limite).
+IMPORTANTE: se ninguém mexer no repositório por 60 dias, o GitHub pausa o agendamento. Se acontecer, entre na aba Actions e clique em "Enable workflow".
+
+PARTE 1 - Criar o repositório (uma vez)
+1) GitHub > New repository > nome: agenda-mascarelo-avisos > marque PUBLIC > Create.
+2) Suba TODOS os arquivos desta pasta, inclusive a pasta .github (arraste o conteúdo do zip em "uploading an existing file").
+
+PARTE 2 - Três segredos (Settings > Secrets and variables > Actions > New repository secret)
+- FIREBASE_SERVICE_ACCOUNT: o conteúdo inteiro do arquivo .json da conta de serviço do Firebase
+  (Firebase Console > Configurações do projeto > Contas de serviço > Gerar nova chave privada).
+  É a mesma chave usada no repositório de backup. Pode ser reaproveitada.
+- VAPID_PUBLIC_KEY: a chave pública que está no arquivo SEGREDOS-AVISOS.txt
+- VAPID_PRIVATE_KEY: a chave privada que está no arquivo SEGREDOS-AVISOS.txt
+Depois de colar, apague o arquivo SEGREDOS-AVISOS.txt. Nunca coloque esses valores dentro de arquivos do repositório.
+
+PARTE 3 - Atualizar o app e ativar no celular
+1) Suba os arquivos novos do agenda-github.zip no repositório do seu app (mantenha o seu firebase-config.js).
+2) Abra o app instalado pelo ícone da tela inicial. No iPhone isso é obrigatório (iOS 16.4 ou mais novo).
+3) Lembretes > Do dia > toque em "Ativar" no cartão de avisos > permita as notificações.
+4) Se aparecer "Entre com o Google primeiro", faça o login e tente de novo.
+
+PARTE 4 - Testar
+- No repositório de avisos: aba Actions > "Avisos dos lembretes" > Run workflow > marque "Enviar um aviso de teste agora" > Run.
+- Em 1 minuto deve chegar "Teste de aviso" no celular.
+- Depois crie um lembrete com horário, deslize para a esquerda > Avisar > "No horário" e espere.
+
+Como usar: deslize um lembrete para a esquerda (ou toque no texto) para Avisar, mandar para Amanhã ou Apagar.

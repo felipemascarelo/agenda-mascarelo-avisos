@@ -1,0 +1,1 @@
+{"name":"agenda-mascarelo-avisos","private":true,"type":"module","dependencies":{"firebase-admin":"^12.0.0","web-push":"^3.6.7"}}
