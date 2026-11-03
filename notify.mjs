@@ -38,7 +38,9 @@ for (const u of await db.collection('users').listDocuments()) {
   const sentRef = u.collection('push').doc('sent');
   const sent = (await read(sentRef)) || {};
   let changed = false;
-  for (const it of items) {
+  const np = ((await read(u.collection('app').doc('core'))) || {}).np || {};
+  const on = (k) => np[k] !== 0;
+  for (const it of on('lem') ? items : []) {
     if (!it.notif || it.dn || !/^\d\d:\d\d$/.test(it.notif)) continue;
     const key = `${today}|${it.id}|${it.notif}`;
     const diff = nowMin - toMin(it.notif);
@@ -49,6 +51,7 @@ for (const u of await db.collection('users').listDocuments()) {
   // Despesas fixas vencidas e não pagas
   const core = (await read(u.collection('app').doc('core'))) || {};
   for (const a of dueAlerts(core.dfix, core.paid, today)) {
+    if (!on(a.k)) continue;
     const key = `d|${today}|${a.id}|${a.t}`;
     const diff = nowMin - toMin(a.t);
     if (sent[key] || diff < 0 || diff > 240) continue;

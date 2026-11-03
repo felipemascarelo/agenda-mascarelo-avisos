@@ -25,11 +25,11 @@ export function dueAlerts(dfix, paid, today) {
     if (!due) continue;
     const late = Math.round((ms(today) - ms(due)) / 864e5), v = brl(x.v), n = x.n;
     if (late === 0) {
-      out.push({ id: x.id, t: SLOTS[0], title: 'Despesa vence hoje', body: `${n} · ${v}` });
-      out.push({ id: x.id, t: SLOTS[1], title: 'Despesa ainda não paga', body: `${n} vence hoje · ${v}` });
-      out.push({ id: x.id, t: SLOTS[2], title: 'Última chamada de hoje', body: `${n} vence hoje e ainda não foi paga · ${v}` });
+      out.push({ id: x.id, k: 'dh', t: SLOTS[0], title: 'Despesa vence hoje', body: `${n} · ${v}` });
+      out.push({ id: x.id, k: 'dh', t: SLOTS[1], title: 'Despesa ainda não paga', body: `${n} vence hoje · ${v}` });
+      out.push({ id: x.id, k: 'dh', t: SLOTS[2], title: 'Última chamada de hoje', body: `${n} vence hoje e ainda não foi paga · ${v}` });
     } else {
-      out.push({ id: x.id, t: SLOTS[0], title: 'Despesa vencida', body: `${n} venceu dia ${due.slice(8, 10)}/${due.slice(5, 7)} (há ${late === 1 ? '1 dia' : late + ' dias'}) · ${v}` });
+      out.push({ id: x.id, k: 'dv', t: SLOTS[0], title: 'Despesa vencida', body: `${n} venceu dia ${due.slice(8, 10)}/${due.slice(5, 7)} (há ${late === 1 ? '1 dia' : late + ' dias'}) · ${v}` });
     }
   }
   return out;
