@@ -2,6 +2,7 @@
 // Não guarda nenhum dado neste repositório: lê e escreve só no seu Firebase.
 import admin from 'firebase-admin';
 import webpush from 'web-push';
+import { dueAlerts } from './due.mjs';
 
 const teste = process.argv.includes('--teste');
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)) });
@@ -43,6 +44,15 @@ for (const u of await db.collection('users').listDocuments()) {
     const diff = nowMin - toMin(it.notif);
     if (sent[key] || diff < 0 || diff > 240) continue;
     const ok = await send({ title: (it.urg ? '⚠ Urgente: ' : '') + it.tx, body: it.desc || (it.tm ? 'Às ' + it.tm : 'Lembrete do dia'), tag: String(it.id), url: './' });
+    if (ok) { sent[key] = 1; changed = true; sentTotal++; }
+  }
+  // Despesas fixas vencidas e não pagas
+  const core = (await read(u.collection('app').doc('core'))) || {};
+  for (const a of dueAlerts(core.dfix, core.paid, today)) {
+    const key = `d|${today}|${a.id}|${a.t}`;
+    const diff = nowMin - toMin(a.t);
+    if (sent[key] || diff < 0 || diff > 240) continue;
+    const ok = await send({ title: a.title, body: a.body, tag: 'd' + a.id, url: './' });
     if (ok) { sent[key] = 1; changed = true; sentTotal++; }
   }
   const limit = new Date(Date.now() - 4 * 864e5).toISOString().slice(0, 10);
