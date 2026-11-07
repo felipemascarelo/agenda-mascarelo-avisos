@@ -50,7 +50,7 @@ for (const u of await db.collection('users').listDocuments()) {
   }
   // Despesas fixas vencidas e não pagas
   const core = (await read(u.collection('app').doc('core'))) || {};
-  for (const a of dueAlerts(core.dfix, core.paid, today)) {
+  for (const a of dueAlerts(core.dfix, core.paid, today, core.dpon)) {
     if (!on(a.k)) continue;
     const key = `d|${today}|${a.id}|${a.t}`;
     const diff = nowMin - toMin(a.t);

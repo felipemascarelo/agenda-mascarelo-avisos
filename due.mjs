@@ -7,7 +7,7 @@ const ms = (ds) => Date.UTC(+ds.slice(0, 4), +ds.slice(5, 7) - 1, +ds.slice(8, 1
 
 // today: 'AAAA-MM-DD'. dfix: lista de despesas. paid: { 'AAAA-MM|d|id': 1 }.
 // Devolve [{ id, t: 'HH:MM', title, body }] para o dia informado.
-export function dueAlerts(dfix, paid, today) {
+export function dueAlerts(dfix, paid, today, dpon) {
   const out = [];
   const y = +today.slice(0, 4), mo = +today.slice(5, 7) - 1;
   for (const x of dfix || []) {
@@ -30,6 +30,18 @@ export function dueAlerts(dfix, paid, today) {
       out.push({ id: x.id, k: 'dh', t: SLOTS[2], title: 'Última chamada de hoje', body: `${n} vence hoje e ainda não foi paga · ${v}` });
     } else {
       out.push({ id: x.id, k: 'dv', t: SLOTS[0], title: 'Despesa vencida', body: `${n} venceu dia ${due.slice(8, 10)}/${due.slice(5, 7)} (há ${late === 1 ? '1 dia' : late + ' dias'}) · ${v}` });
+    }
+  }
+  for (const x of dpon || []) {
+    if (x.p || !x.d || x.d > today) continue;
+    if (x.id > 1e12 && x.d < new Date(x.id - 3 * 36e5).toISOString().slice(0, 10)) continue;
+    const late = Math.round((ms(today) - ms(x.d)) / 864e5), v = brl(x.v), n = x.n;
+    if (late === 0) {
+      out.push({ id: x.id, k: 'dh', t: SLOTS[0], title: 'Despesa vence hoje', body: `${n} · ${v}` });
+      out.push({ id: x.id, k: 'dh', t: SLOTS[1], title: 'Despesa ainda não paga', body: `${n} vence hoje · ${v}` });
+      out.push({ id: x.id, k: 'dh', t: SLOTS[2], title: 'Última chamada de hoje', body: `${n} vence hoje e ainda não foi paga · ${v}` });
+    } else {
+      out.push({ id: x.id, k: 'dv', t: SLOTS[0], title: 'Despesa vencida', body: `${n} venceu dia ${x.d.slice(8, 10)}/${x.d.slice(5, 7)} (há ${late === 1 ? '1 dia' : late + ' dias'}) · ${v}` });
     }
   }
   return out;
