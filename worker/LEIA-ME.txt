@@ -1,0 +1,5 @@
+Gatilho dos avisos (Cloudflare Worker)
+1) GitHub > Settings > Developer settings > Fine-grained tokens > Generate: repositório agenda-mascarelo-avisos, permissão Actions: Read and write. Copie o token.
+2) Cloudflare > Workers & Pages > Create > Worker > cole gatilho.js > Deploy.
+3) Settings > Variables and Secrets > adicione o segredo GH_TOKEN = token do passo 1.
+4) Settings > Triggers > Cron Triggers > adicione */5 * * * *
