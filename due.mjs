@@ -7,6 +7,8 @@ const ms = (ds) => Date.UTC(+ds.slice(0, 4), +ds.slice(5, 7) - 1, +ds.slice(8, 1
 
 // today: 'AAAA-MM-DD'. dfix: lista de despesas. paid: { 'AAAA-MM|d|id': 1 }.
 // Devolve [{ id, t: 'HH:MM', title, body }] para o dia informado.
+const insN = (x, m) => { if (!x.pc) return 0; const a = x.p0 || m; return (+m.slice(0, 4)) * 12 + +m.slice(5, 7) - ((+a.slice(0, 4)) * 12 + +a.slice(5, 7)) + 1; };
+const alv = (x, m) => { if (!x.pc) return true; const n = insN(x, m); return n >= 1 && n <= x.pc; };
 export function dueAlerts(dfix, paid, today, dpon) {
   const out = [];
   const y = +today.slice(0, 4), mo = +today.slice(5, 7) - 1;
@@ -14,7 +16,7 @@ export function dueAlerts(dfix, paid, today, dpon) {
   const tl = new Date(Date.UTC(+tmw.slice(0, 4), +tmw.slice(5, 7), 0)).getUTCDate();
   const born = (x, ds) => x.id > 1e12 && ds < new Date(x.id - 3 * 36e5).toISOString().slice(0, 10); // criada depois do vencimento
   for (const x of dfix || []) {
-    if (tmw === `${tm}-${p2(Math.min(+x.dia || 1, tl))}` && !(paid && paid[`${tm}|d|${x.id}`]) && !born(x, tmw))
+    if (alv(x, tm) && tmw === `${tm}-${p2(Math.min(+x.dia || 1, tl))}` && !(paid && paid[`${tm}|d|${x.id}`]) && !born(x, tmw))
       out.push({ id: x.id, k: 'dp', t: SLOTS[0], title: 'Despesa vence amanhã', body: `${x.n} · ${brl(x.v)}` });
     let due = null;
     for (let k = 6; k >= 0; k--) {
@@ -24,6 +26,7 @@ export function dueAlerts(dfix, paid, today, dpon) {
       const dd = `${m}-${p2(Math.min(+x.dia || 1, last))}`;
       if (dd > today) continue;
       if (x.id > 1e12 && dd < new Date(x.id - 3 * 36e5).toISOString().slice(0, 10)) continue; // criada depois do vencimento
+      if (!alv(x, m)) continue;
       if (paid && paid[`${m}|d|${x.id}`]) continue;
       due = dd; break;
     }
